@@ -14,7 +14,7 @@ const IssueDetailPage = async ({ params }: Props) => {
   })
 
   if (!issue) notFound()
-
+  
   return (
     <div>
       <Heading>{issue.title}</Heading>
@@ -22,7 +22,7 @@ const IssueDetailPage = async ({ params }: Props) => {
         <IssueStatusBadge status={issue.status} />
         <Text>{issue.createdAt.toDateString()}</Text>
       </Flex>
-      <Card className='prose'>
+      <Card className='prose'mt='4'>
         <ReactMarkdown>{issue.description}</ReactMarkdown>
       </Card>
     </div>
