@@ -41,6 +41,7 @@ const IssueForm = ({ issue }: { issue?: Issue }) => {
         await axios.post('/api/issues', data)
       }
       router.push('/issues')
+      router.refresh() // force refresh to update the cache
     } catch (error) {
       setIsSubmitting(false)
       setError('Something went wrong')
