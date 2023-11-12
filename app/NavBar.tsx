@@ -5,9 +5,12 @@ import { usePathname } from 'next/navigation'
 import React from 'react'
 import { AiFillBug } from 'react-icons/ai'
 import classnames from 'classnames'
+import { useSession } from 'next-auth/react'
+import { Box } from '@radix-ui/themes'
 
 const NavBar = () => {
   const currentPath = usePathname()
+  const { status, data: session } = useSession()
 
   const links = [
     { label: 'Dashboard', href: '/' },
@@ -26,7 +29,7 @@ const NavBar = () => {
               className={classnames({
                 'text-zinc-900': currentPath === href,
                 'text-zinc-500': currentPath !== href,
-                'hover:text-zinc-800 transition-colors': true
+                'hover:text-zinc-800 transition-colors': true,
               })}
               href={href}
             >
@@ -35,6 +38,14 @@ const NavBar = () => {
           </li>
         ))}
       </ul>
+      <Box>
+        {status === 'authenticated' && (
+          <Link href='/api/auth/signout'>Log out</Link>
+        )}
+        {status === 'unauthenticated' && (
+          <Link href='/api/auth/signin'>Log in</Link>
+        )}
+      </Box>
     </nav>
   )
 }
