@@ -1,28 +1,15 @@
 'use client'
+import { Skeleton } from '@/app/components'
 import { Issue, User } from '@prisma/client'
 import { Select } from '@radix-ui/themes'
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
-import React, { useEffect, useState } from 'react'
-import { Skeleton } from '@/app/components'
 import toast, { Toaster } from 'react-hot-toast'
 
 const AssigneeSelect = ({ issue }: { issue: Issue }) => {
-  const {
-    data: users,
-    error,
-    isLoading,
-  } = useQuery<User[]>({
-    queryKey: ['users'],
-    queryFn: async () => {
-      const { data } = await axios.get<User[]>('/api/users')
-      return data
-    },
-    staleTime: 1000 * 60,
-    retry: 3,
-  })
-  // const [users, setUsers] = useState<User[]>([])
+  const { data: users, error, isLoading } = useUsers()
 
+  // const [users, setUsers] = useState<User[]>([])
   // useEffect(() => {
   //   const fetchUsers = async () => {
   //     const { data } = await axios.get<User[]>('/api/users')
@@ -35,19 +22,21 @@ const AssigneeSelect = ({ issue }: { issue: Issue }) => {
 
   if (error) return null
 
+  const assignIssue = (userId: string) => {
+    axios
+      .patch(`/api/issues/${issue.id}`, {
+        assignedToUserId: userId === 'unassigned' ? null : userId,
+      })
+      .catch(() => {
+        toast.error('Failed to update issue')
+      })
+  }
+
   return (
     <>
       <Select.Root
         defaultValue={issue.assignedToUserId || 'unassigned'}
-        onValueChange={(userId) => {
-          axios
-            .patch(`/api/issues/${issue.id}`, {
-              assignedToUserId: userId === 'unassigned' ? null : userId,
-            })
-            .catch(() => {
-              toast.error('Failed to update issue')
-            })
-        }}
+        onValueChange={assignIssue}
       >
         <Select.Trigger placeholder='Assign...' />
         <Select.Content>
@@ -66,5 +55,16 @@ const AssigneeSelect = ({ issue }: { issue: Issue }) => {
     </>
   )
 }
+
+const useUsers = () =>
+  useQuery<User[]>({
+    queryKey: ['users'],
+    queryFn: async () => {
+      const { data } = await axios.get<User[]>('/api/users')
+      return data
+    },
+    staleTime: 1000 * 60,
+    retry: 3,
+  })
 
 export default AssigneeSelect
