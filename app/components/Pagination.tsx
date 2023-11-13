@@ -25,7 +25,7 @@ const Pagination = ({ itemCount, pageSize, currentPage }: Props) => {
   const changePage = (page: number) => {
     const params = new URLSearchParams(searchParams)
     params.set('page', page.toString())
-    router.push(`/?${params.toString()}`)
+    router.push(`/issues?${params.toString()}`)
   }
 
   return (
@@ -35,7 +35,7 @@ const Pagination = ({ itemCount, pageSize, currentPage }: Props) => {
       </Text>
       <Button
         color='gray'
-        variant='soft'
+        variant='soft' 
         disabled={currentPage === 1}
         onClick={() => changePage(1)}
       >
